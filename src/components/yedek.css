@@ -1,0 +1,121 @@
+/* Reset default margins and paddings */
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Sidebar styling */
+.sidebar {
+    height: 100vh;
+    width: 360px; /* Adjust width as needed */
+    background-color: #ffffff; /* Soft white background */
+    padding: 0px 20px 20px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+/* Styling for form section */
+.mainForm {
+    flex: 1;
+    border: 1px solid #d1d1d1; /* Light border for the form */
+    border-radius: 8px;
+    width: 100%;
+    padding: 20px;
+    background-color: #fafafa; /* Slightly off-white background */
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for list section */
+.listPersons {
+    border: none; /* Kaldırdık */
+    border-radius: 12px; /* Daha yuvarlak köşeler */
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4; /* Daha açık gri arka plan */
+    padding: 30px; /* Daha geniş iç boşluk */
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+}
+
+/* Form element styling */
+.sidebar form {
+    width: 100%;
+}
+
+/* Label styling */
+.sidebar label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Input styling */
+.sidebar input {
+    width: calc(100% - 20px); /* Adjust to fit within padding */
+    padding: 12px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+/* Input focus styling */
+.sidebar input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Button styling */
+.sidebar button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Button hover styling */
+.sidebar button:hover {
+    background-color: #0056b3;
+}
+
+/* Error message styling */
+.sidebar h4 {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Person card styling */
+.personCard {
+    border: none; /* Kaldırdık */
+    border-radius: 12px; /* Daha yuvarlak köşeler */
+    padding: 15px; /* Daha geniş iç boşluk */
+    margin-bottom: 20px; /* Daha fazla boşluk */
+    background-color: #ffffff; /* Beyaz arka plan */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Daha yumuşak gölge */
+    font-size: 18px; /* Daha büyük yazı boyutu */
+    transition: transform 0.3s, box-shadow 0.3s; /* Animasyon efektleri */
+}
+
+.personCard:hover {
+    transform: translateY(-5px); /* Hover etkisi ile yukarı kaydırma */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Daha belirgin gölge */
+}
+.personCard div {
+    margin-bottom: 10px; /* Her bölüm arasında boşluk */
+}
+.personCard strong {
+    color: #333; /* Başlıklar için koyu renk */
+}
