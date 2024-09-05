@@ -37,8 +37,8 @@
 
 #hesapla {
     position: absolute;
-    bottom:calc(10vh - 3.5rem);
-    left:25px;
+    bottom:calc(10vh - 2.5rem);
+    left:50px;
     width: 280px;
     height: 40px;
     padding: 12px;

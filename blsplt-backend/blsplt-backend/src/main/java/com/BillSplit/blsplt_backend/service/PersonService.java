@@ -1,8 +1,13 @@
 package com.BillSplit.blsplt_backend.service;
 
-import com.BillSplit.blsplt_backend.DTO.PersonDto;
+import com.BillSplit.blsplt_backend.DTO.PersonDTO;
+import com.BillSplit.blsplt_backend.Exceptions.EventNotFoundException;
+import com.BillSplit.blsplt_backend.Exceptions.PersonNotFoundException;
+import com.BillSplit.blsplt_backend.entity.Event;
 import com.BillSplit.blsplt_backend.entity.Person;
+import com.BillSplit.blsplt_backend.repository.EventRepository;
 import com.BillSplit.blsplt_backend.repository.PersonRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -18,6 +24,7 @@ import java.util.stream.Collectors;
 public class PersonService implements IPersonService {
     
     private final PersonRepository personRepository;
+    private final EventRepository eventRepository;
 
     @Override
     public Person createPerson(Person person) {
@@ -28,9 +35,10 @@ public class PersonService implements IPersonService {
 
 
     @Override
-    public List<String> processPersonList() {
+    public List<String> processPersonList(Long eventId) {
+
         List<String> messageList = new ArrayList<>();
-        List<Person> personList = personRepository.findAll();
+        List<Person> personList = personRepository.findAllByEventId(eventId);
         BigDecimal total = personList.stream()
                 .map(person -> BigDecimal.valueOf(person.getOdedigiTutar()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -42,9 +50,9 @@ public class PersonService implements IPersonService {
         }
 
         // DTO dönüşüm ve personDto listesi kısmı
-        List<PersonDto> personDtoList = new ArrayList<>();
+        List<PersonDTO> personDTOList = new ArrayList<>();
         for (Person person : personList) {
-            PersonDto personDto = new PersonDto();
+            PersonDTO personDto = new PersonDTO();
             personDto.setAd(person.getAd());
             personDto.setSoyad(person.getSoyad());
             personDto.setOdedigiTutar(person.getOdedigiTutar());
@@ -52,15 +60,15 @@ public class PersonService implements IPersonService {
             BigDecimal balance = BigDecimal.valueOf(person.getOdedigiTutar()).subtract(avg);
             personDto.setBalans(balance.doubleValue());
 
-            personDtoList.add(personDto);
+            personDTOList.add(personDto);
         }
 
         System.out.println(personList.size());
-        assert !personDtoList.isEmpty();
-        Stack<PersonDto> lessthenAVG = personDtoList.stream()
+        assert !personDTOList.isEmpty();
+        Stack<PersonDTO> lessthenAVG = personDTOList.stream()
                 .filter(w -> w.getBalans() < 0)
                 .collect(Collectors.toCollection(Stack::new));
-        Stack<PersonDto> morethenAVG = personDtoList.stream()
+        Stack<PersonDTO> morethenAVG = personDTOList.stream()
                 .filter(w -> w.getBalans() > 0)
                 .collect(Collectors.toCollection(Stack::new));
         System.out.println("ortalama : " + avg);
@@ -69,8 +77,8 @@ public class PersonService implements IPersonService {
         // BİLLSPLİT ALGORİTMASI
         while (!morethenAVG.isEmpty() && !lessthenAVG.isEmpty()) {
 
-            PersonDto more = morethenAVG.peek();
-            PersonDto less = lessthenAVG.peek();
+            PersonDTO more = morethenAVG.peek();
+            PersonDTO less = lessthenAVG.peek();
 
             System.out.println("Şu anda işlem görüyor: " + more.getAd());
             System.out.println("Şu anda işlem görüyor: " + less.getAd());
@@ -112,10 +120,32 @@ public class PersonService implements IPersonService {
         }
         return messageList.stream().toList();
     }
-
+    @Transactional
     @Override
-    public void updatePerson(int index, Person person) {
-            personRepository.save(person);
+    public void updatePerson(int index, Person person) throws PersonNotFoundException, EventNotFoundException {
+
+        if (personRepository.existsById((long) index)) {
+            Person person1 = personRepository.findById((long) index).orElseThrow(() -> new PersonNotFoundException("Person not found in database"));
+
+            Optional<Event> event = eventRepository.findById(person1.getEvent().getId());
+
+            if (!event.isPresent()) {
+                throw new EventNotFoundException("Event not found in database");
+            }
+
+            // Update the fields
+            person1.setAd(person.getAd());
+            person1.setSoyad(person.getSoyad());
+            person1.setOdedigiTutar(person.getOdedigiTutar());
+            person1.setEvent(event.get());
+
+            // Save the updated entity
+            personRepository.save(person1);
+
+            System.out.println("Person başarıyla güncellendi.");
+        } else {
+            throw new PersonNotFoundException("Person not found in database");
+        }
     }
 
     @Override
@@ -124,13 +154,7 @@ public class PersonService implements IPersonService {
         System.out.println("Person with ID " + id + " deleted.");
     }
 
-    @Override
-    public List<Person> getPersonList() {
-
-        List<Person> personList = personRepository.findAll();
-        return personList.stream().toList();
-    }
-    public List<Person> getPersonsByEventId(Long eventId) {
+    public List<Person> getPersonListByEventId(Long eventId) {
         return personRepository.findAllByEventId(eventId);
     }
 

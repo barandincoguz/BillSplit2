@@ -10,47 +10,46 @@ body, html {
 }
 .editForm {
     z-index: 10;
-    position: absolute;
-    top: 65%;
-    left: 200px;
-    max-width: 90%; /* Limit width */
-    max-height: 90%;
+    position: fixed; /* Changed to fixed to center on screen */
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
     visibility: hidden;
     opacity: 0;
-    transition: opacity 1ms ease;
-    overflow: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+    overflow: hidden;
 }
 .editForm .mainForm {
-    flex: 1;
-    border: 0 solid rgba(209, 209, 209, 0.1); /* Lighter border */
-    border-radius: 8px;
-    width: 320px;
-    height: 310px;
+    border: 1px solid rgba(209, 209, 209, 0.3); /* Light border */
+    border-radius: 12px; /* Rounded corners */
     padding: 20px;
-    background: transparent; /* Slightly transparent background */
+    background: rgba(255, 255, 255, 0.95); /* Slightly opaque white background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Softer shadow */
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .editForm .mainForm .form label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #f9f9f9;
+    color: #333; /* Dark color for better readability */
 }
 .editForm .mainForm .form input {
-    width: calc(100% - 22px); /* Adjust to fit within padding */
+    width: calc(100% - 24px); /* Adjust width to fit within padding */
     padding: 12px;
     margin-bottom: 16px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
 .editForm .mainForm .form input:focus {
     border-width: 2px;
-    border-color: #f030aa46;
+    border-color: #007bff; /* Changed to a blue color for better focus visibility */
     outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Subtle shadow on focus */
 }
 .buttons {
     width: 100%;
@@ -58,20 +57,18 @@ body, html {
     background-image: linear-gradient(to right, #E55D87 0%, #5FC3E4 51%, #E55D87 100%);
     text-align: center;
     text-transform: uppercase;
-    transition: 0.5s;
+    transition: background-position 0.5s, color 0.5s;
     background-size: 200% auto;
     color: white;
-    box-shadow: 0 0 10px #eee;
     border: none;
     border-radius: 10px;
-    display: block;
     cursor: pointer;
 }
-.editForm .mainForm .form button:hover {
-    background-position: right center; /* Change the direction of the change here */
+.buttons:hover {
+    background-position: right center; /* Change the direction of the gradient */
     color: #fff;
-    text-decoration: none;
 }
+/* Error message styling */
 .editForm .mainForm .form h4 {
     color: #e74c3c;
     font-size: 14px;

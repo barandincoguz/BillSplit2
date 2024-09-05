@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "./sidebar.css";
-import { HiMinusCircle } from "react-icons/hi";
-import { HiOutlinePencil } from "react-icons/hi";
+import "../styles/sidebar.css";
+import { HiMinusCircle, HiOutlinePencil } from "react-icons/hi";
 import axios from "axios";
 
-const Sidebar = () => {
+const Sidebar = ({ eventId }) => {
 	const [ad, setAd] = useState("");
 	const [soyad, setSoyad] = useState("");
 	const [odedigiTutar, setOdedigiTutar] = useState(""); // Initialize as an empty string
@@ -12,10 +11,10 @@ const Sidebar = () => {
 	const [personList, setPersonList] = useState([]);
 	const [error, setError] = useState("");
 	const [edittedPerson, setEdittedPerson] = useState(null);
+
 	const regex = /^[A-Za-zçÇğĞıİöÖşŞüÜ ]+$/;
-
-
-
+	const numericId = Number(eventId);
+	const [eventCard, setEventCard] = useState({});
 	const validateForm = (ad, soyad, odedigiTutar, regex, setError) => {
 		setError("");
 		if (String(odedigiTutar).trim() === "" || isNaN(odedigiTutar)) {
@@ -28,21 +27,39 @@ const Sidebar = () => {
 		}
 		return true;
 	};
+	const fetchEventById = async () => {
+		try {
+			const response = await axios.get(
+				`http://localhost:8080/api/event/getEventById/${numericId}`
+			);
+			if (response && response.data) {
+				setEventCard(await response.data);
+			}
+			console.log(eventCard);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+	useEffect(() => {
+		fetchEventById();
+	}, []);
 
 	const fetchPersonList = async () => {
 		try {
 			const response = await axios.get(
-				"http://localhost:8080/api/person/list"
+				`http://localhost:8080/api/person/event/getList`,
+				{ params: { eventId: numericId } }
 			);
-			setPersonList(response.data);
+			if (response && response.data) {
+				setPersonList(response.data);
+			}
 		} catch (error) {
 			console.error("Fetching failed", error);
 		}
 	};
 	useEffect(() => {
-			fetchPersonList();
-		},
-		[]);
+		fetchPersonList();
+	}, []);
 
 	const handleRemove = async (id) => {
 		try {
@@ -88,6 +105,7 @@ const Sidebar = () => {
 				odedigiTutar: parseFloat(odedigiTutar).toFixed(2),
 			};
 			try {
+				console.log("editted person : " + id);
 				await axios.put(
 					`http://localhost:8080/api/person/update/${id}`,
 					updatedPerson
@@ -125,7 +143,8 @@ const Sidebar = () => {
 			try {
 				const response = await axios.post(
 					"http://localhost:8080/api/person/createPerson",
-					newPerson
+					{ ...newPerson },
+					{ params: { eventId: eventId } }
 				);
 				setPersonList([...personList, response.data]);
 				console.log(personList);
@@ -174,14 +193,40 @@ const Sidebar = () => {
 							onChange={(e) => setOdedigiTutar(e.target.value)}
 						/>
 						{error && <h4>{error}</h4>}
-						<button type="submit" id="submitButton" className="buttons">
+						<button
+							type="submit"
+							id="submitButton"
+							className="buttons">
 							GÜNCELLE
 						</button>
 					</form>
+					<div className="eventCardWrapper">
+						<div className="card text-center shadow-lg border-light mt-5">
+							<div className="card-body">
+								<h5
+									className="card-title text-success"
+									style={{
+										fontSize: "1.5rem",
+										fontWeight: "bold",
+										color: "#343a40",
+									}}>
+									{eventCard.name}
+								</h5>
+								<p
+									className="card-text"
+									style={{
+										fontSize: "1.125rem",
+										color: "#6c757d",
+									}}>
+									Etkinlik Tarihi: {eventCard.date}
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 
-			<div className="sidebar">
+			<div className="sidebar col-md-5">
 				<div className="mainForm">
 					<form className="form" onSubmit={handleSubmit}>
 						<label htmlFor="Ad">Ad</label>
@@ -218,6 +263,29 @@ const Sidebar = () => {
 							KİŞİ EKLE
 						</button>
 					</form>
+					<div className="eventCardWrapper">
+						<div className="card text-center shadow-lg border-light mt-5">
+							<div className="card-body">
+								<h5
+									className="card-title text-success"
+									style={{
+										fontSize: "1.5rem",
+										fontWeight: "bold",
+										color: "#343a40",
+									}}>
+									{eventCard.name}
+								</h5>
+								<p
+									className="card-text"
+									style={{
+										fontSize: "1.125rem",
+										color: "#6c757d",
+									}}>
+									Etkinlik Tarihi: {eventCard.date}
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<div className="listPersons">

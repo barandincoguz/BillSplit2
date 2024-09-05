@@ -1,5 +1,7 @@
 package com.BillSplit.blsplt_backend.service;
 
+import com.BillSplit.blsplt_backend.Exceptions.EventNotFoundException;
+import com.BillSplit.blsplt_backend.Exceptions.PersonNotFoundException;
 import com.BillSplit.blsplt_backend.entity.Event;
 import com.BillSplit.blsplt_backend.entity.Person;
 import com.BillSplit.blsplt_backend.repository.EventRepository;
@@ -7,6 +9,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class EventService implements IEventService{
@@ -18,7 +22,7 @@ public class EventService implements IEventService{
 
     @Override
     public List<Event> getAllEvents() {
-        return eventRepository.findAll().stream().toList();
+        return eventRepository.findAll();
     }
 
     @Override
@@ -27,7 +31,22 @@ public class EventService implements IEventService{
     }
 
     @Override
-    public Event updateEvent(Long id, Event event) {
-        return eventRepository.save(event);
+    public Event updateEvent(Long id, Event event) throws EventNotFoundException {
+        if (eventRepository.existsById((long) id)) {
+            Optional<Event> event1;
+            event1 = eventRepository.findById((long) id);
+            event1.get().setName(event.getName());
+            event1.get().setDate(event.getDate());
+            return eventRepository.save(event1.get()) ;
+        }
+        else {
+            throw new EventNotFoundException("event bulunamadı");
+        }
     }
+
+    @Override
+    public Optional<Event> getEventById(Long id) {
+        return eventRepository.findById(id);
+    }
+
 }

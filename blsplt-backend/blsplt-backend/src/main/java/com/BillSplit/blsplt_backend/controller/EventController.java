@@ -1,19 +1,21 @@
 package com.BillSplit.blsplt_backend.controller;
 
+import com.BillSplit.blsplt_backend.Exceptions.EventNotFoundException;
 import com.BillSplit.blsplt_backend.entity.Event;
 import com.BillSplit.blsplt_backend.service.EventService;
-import com.BillSplit.blsplt_backend.service.IEventService;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/event")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 public class EventController {
     private final EventService eventService;
 
@@ -50,12 +52,20 @@ public class EventController {
    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
+       System.out.println("delete tetiklendi");
         return ResponseEntity.ok().build();
     }
     @PutMapping("/update/{id}")
+    @SneakyThrows
     public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
         Event updatedEvent = eventService.updateEvent(id,event) ;
         return ResponseEntity.status(HttpStatus.OK).body(updatedEvent);
     }
+      @GetMapping("/getEventById/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+    Optional<Event> event = eventService.getEventById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(event.get());
+      }
+
 }
 

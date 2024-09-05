@@ -18,7 +18,7 @@ public class Person {
     private String soyad;
     @Column(name ="odedigiTutar")
     private double odedigiTutar;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER , cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "event_id")
     private Event event;
 
@@ -26,6 +26,7 @@ public class Person {
     public String toString() {
         return "Person{" +
                 "id=" + id +
+                " , event_id : " + event.getId() + " " +
                 ", ad='" + ad + '\'' +
                 ", soyad='" + soyad + '\'' +
                 ", odedigiTutar=" + odedigiTutar +
